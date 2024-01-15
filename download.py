@@ -4,7 +4,6 @@ import dateparser
 import datetime
 import logging
 import os
-
 from bs4 import BeautifulSoup
 
 # some config
@@ -29,9 +28,9 @@ def proflyer_request(cookie):
 
 
 def set_filter(url, cookie):
-    logging.debug("Trying to set filter over url {}".format(url))
+    logging.debug("Trying to set filter over url {}".format(media_url + "/" + url))
     try:
-        response = requests.get(proflyer_url, headers={"Cookie": cookie})
+        response = requests.get(media_url + "/" + url, headers={"Cookie": cookie})
         return response
     except requests.exceptions.RequestException as e:
         raise SystemExit(e)
@@ -39,8 +38,7 @@ def set_filter(url, cookie):
 
 def get_video_urls_from_session(session, cookie, perspective):
     logging.info("Getting videos from session {}".format(session["session_time"]))
-    set_filter(session["filter_url"], cookie)
-    response = proflyer_request(cookie)
+    response = set_filter(session["filter_url"], cookie)
 
     logging.info("Parsing HTML Response")
     soup = BeautifulSoup(response.text, "html.parser")
@@ -86,7 +84,6 @@ def download_sessions(sessions):
             logging.info("Downloading {}".format(url))
             # not using urlretrieve over requests for file name infos and some header issues
             response = requests.get(url)
-            print()
             file_name = (
                 response.headers["content-disposition"].split("filename=")[1].strip()
             )
