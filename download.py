@@ -87,11 +87,13 @@ def download_sessions(sessions):
             file_name = (
                 response.headers["content-disposition"].split("filename=")[1].strip()
             )
-            with open(os.path.join(session_path, file_name), "wb") as video:
-                video.write(response.content)
-            logging.info(
-                "Downloaded {} successfully to {}".format(file_name, session_path)
-            )
+            v = os.path.join(session_path, file_name)
+            if not os.path.exists(v):
+                with open(v, "wb") as video:
+                    video.write(response.content)
+                logging.info(
+                    "Downloaded {} successfully to {}".format(file_name, session_path)
+                )
 
 
 def main():
@@ -106,7 +108,8 @@ def main():
     parser.add_argument("cookie_file")
     parser.add_argument(
         "--perspective",
-        help="Set perspective for downloading. Defaults to all perspectives.",
+        help="Set perspective for downloading (Bottom, Sideline, Top, Centerline).\
+        Defaults to all perspectives.",
     )
     parser.add_argument(
         "--start", help="Set start date for downloading. Defaults: today-30days"
